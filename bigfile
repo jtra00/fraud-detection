@@ -1,0 +1,66 @@
+library(plyr)
+library(fields)
+library(lme4) 
+library(scatterplot3d)
+bigfile1<- fread("C:\Users\Kweni BG\Documents\CMS files\PartD_Prescriber_PUF_NPI_DRUG_13", sep="auto", header="auto", na.strings="NA",stringsAsFactors=FALSE, verbose=FALSE, select=NULL,
+                 colClasses=NULL, integer64=getOption("datatable.integer64"))
+head(bigfile)
+
+bigfile<- as.data.frame(bigfile)
+bigfile <-na.omit(bigfile)
+attach(bigfile)
+#####################################################################################################################   
+PROVIDER_TYPE<- as.factor(PROVIDER_TYPE)
+MEDICARE_PARTICIPATION_INDICATOR<- as.factor(MEDICARE_PARTICIPATION_INDICATOR)
+PLACE_OF_SERVICE<- as.factor(PLACE_OF_SERVICE)
+HCPCS_CODE<- as.factor(HCPCS_CODE)
+HCPCS_DRUG_INDICATOR<- as.factor(HCPCS_DRUG_INDICATOR)
+str(bigfile)
+#############################################################
+
+#################################################
+# look into internal medicine for fraud
+# Graphics for fraud detection
+
+intermed <-filter(bigfile, PROVIDER_TYPE == "Internal Medicine")
+
+plot(AVERAGE_SUBMITTED_CHRG_AMT,AVERAGE_MEDICARE_PAYMENT_AMT)
+
+intermed1 <-filter(intermedM1,  AVERAGE_MEDICARE_PAYMENT_AMT> 80 & AVERAGE_MEDICARE_PAYMENT_AMT<=120)
+
+AVERAGE_MEDICARE_PAYMENT_AMT
+
+
+b  <- intermed1[sample(1:nrow(intermed1$NPI), 1000, replace=FALSE)]
+b <-intermed1[1:1000,]
+
+#Data for illustration
+d <- density(AVERAGE_MEDICARE_ALLOWED_AMT)
+plot(d)
+x = AVERAGE_MEDICARE_ALLOWED_AMT
+
+f = function(x, y) { r = sqrt(x^2+y^2); 10 * sin(r)/r }
+z = outer(x, y, f)
+z[is.na(z)] = 1
+#Method 1
+#Perspective Plot
+persp(x,y,z,col="lightblue",main="Perspective Plot")
+
+## set the seed to make your partition reproductible
+set.seed(123)
+#train and test
+
+smp_size <- floor(0.10 * nrow(bigfile))
+csub <- sample(seq_len(nrow(bigfile)), size = smp_size)
+cms.sub <- bigfile[csub, ]
+head(cms.sub)
+
+
+bigfile<-na.omit(bigfile)
+attach(cms.sub)
+
+cms.fit <- lmer(AVERAGE_MEDICARE_PAYMENT_AMT ~ LINE_SRVC_CNT + BENE_UNIQUE_CNT+AVERAGE_MEDICARE_ALLOWED_AMT+PROVIDER_TYPE+(PROVIDER_TYPE|HCPCS_CODE))
+
+summary(cms.fit)
+
+anova(cms.fit)
