@@ -1,0 +1,77 @@
+#John Tra, PhD
+
+#finding anomalies in images using R
+
+# Install magick package if not already installed
+#install.packages("magick")
+
+# Load the magick package
+library(magick)
+
+# Load the first image
+image1 <- image_read("Rcodes/firstimage.png")
+View(image1)
+
+# Load the second image
+image2 <- image_read("Rcodes/secondimage.png")
+
+# Resize images to the same dimensions (if needed)
+image1 <- image_resize(image1, "500x500")
+image2 <- image_resize(image2, "500x500")
+
+# Convert images to grayscale
+image1 <- image_convert(image1, colorspace = "gray")
+image2 <- image_convert(image2, colorspace = "gray")
+
+# Compute the absolute difference between the images
+diff_image <- image_composite(image1, image2, operator = "difference")
+
+# Enhance the difference image to highlight anomalies
+diff_image <- image_negate(diff_image)
+diff_image <- image_contrast(diff_image, sharpen = 10)
+diff_image <- image_threshold(diff_image, threshold = "50%")
+
+# Combine the original and difference images for display
+combined_image <- image_append(c(image1, image2, diff_image))
+
+# Display the images
+print(combined_image)
+
+
+################################################################
+#finding anomalies in images using R
+
+# Install magick package if not already installed
+#install.packages("magick")
+
+# Load the magick package
+library(magick)
+
+# Load the first image
+image1 <- image_read("Rcodes/snowman1.png")
+View(image1)
+
+# Load the second image
+image2 <- image_read("Rcodes/snowman2.png")
+
+# Resize images to the same dimensions (if needed)
+image1 <- image_resize(image1, "500x500")
+image2 <- image_resize(image2, "500x500")
+
+# Convert images to grayscale
+image1 <- image_convert(image1, colorspace = "gray")
+image2 <- image_convert(image2, colorspace = "gray")
+
+# Compute the absolute difference between the images
+diff_image <- image_composite(image1, image2, operator = "difference")
+
+# Enhance the difference image to highlight anomalies
+diff_image <- image_negate(diff_image)
+diff_image <- image_contrast(diff_image, sharpen = 10)
+diff_image <- image_threshold(diff_image, threshold = "50%")
+
+# Combine the original and difference images for display
+combined_image <- image_append(c(image1, image2, diff_image))
+
+# Display the images
+print(combined_image)
